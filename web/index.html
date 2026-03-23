@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科研审稿系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            background: #305E5A;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #305E5A;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-badge {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5568d3; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-success:hover { background: #229954; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-warning:hover { background: #d68910; }
+        .btn-info { background: #3498db; color: white; }
+        .btn-info:hover { background: #2980b9; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            margin-bottom: -2px;
+        }
+
+        .tab:hover { color: #667eea; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .paper-list { margin-top: 20px; }
+
+        .paper-item {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .paper-item h3 { color: #333; margin-bottom: 10px; }
+        .paper-item p { color: #666; margin-bottom: 8px; }
+
+        .paper-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-submitted { background: #3498db; color: white; }
+        .status-review { background: #f39c12; color: white; }
+        .status-revision { background: #e67e22; color: white; }
+        .status-accepted { background: #27ae60; color: white; }
+        .status-rejected { background: #e74c3c; color: white; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 { font-size: 36px; margin-bottom: 10px; }
+        .stat-card p { font-size: 14px; opacity: 0.9; }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 { color: #333; }
+
+        .close-modal {
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .close-modal:hover { color: #333; }
+
+        .hidden { display: none !important; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th { background: #f8f9fa; color: #333; font-weight: 600; }
+        table tr:hover { background: #f8f9fa; }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+        .review-card {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .review-card h4 { color: #2c3e50; margin-bottom: 10px; }
+
+        .score-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .rating-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .rating-input input[type="range"] { flex: 1; }
+
+        .rating-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .decision-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #ddd;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .file-upload-area.dragover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .file-upload-area.has-file {
+            border-color: #27ae60;
+            background: #e8f8f0;
+        }
+
+        .file-name {
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .detail-section { margin-bottom: 20px; }
+
+        .detail-section h4 {
+            color: #333;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            width: 120px;
+            color: #666;
+        }
+
+        .detail-value { flex: 1; color: #333; }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast-success { background: #27ae60; }
+        .toast-error { background: #e74c3c; }
+        .toast-info { background: #3498db; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover { background: #e9ecef; }
+        .checkbox-item.selected { background: #667eea; color: white; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .backup-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .backup-info { flex: 1; }
+        .backup-time { color: #666; font-size: 12px; }
+
+        .version-tag {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+
+        /* Auth layout */
+        .auth-wrapper {
+            max-width: 2000px;
+            margin: 40px auto;
+            padding: 40px 100px;
+            position: relative;
+            background: #faf8ec;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 50px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .auth-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 44%;
+            min-width: 520px;
+            background: #f8c91c;
+            border-top-left-radius: 420px;
+            border-bottom-left-radius: 420px;
+            z-index: 0;
+        }
+
+        .auth-wrapper .illustration {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 30px 30px 90px 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-wrapper .illustration img {
+            display: block;
+            max-width: 100%;
+            max-height: 600px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .auth-wrapper .login-card {
+            flex: 0 0 420px;
+            padding: 24px 40px;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-wrapper .login-card h2 {
+            display: block;
+        }
+
+        .login-card .welcome {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .login-card .signin-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .login-card .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .login-card .helper-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .login-card .helper-row .remember input {
+            margin-right: 6px;
+        }
+
+        .btn-dark {
+            background: #000;
+            color: #fff;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-dark:hover {
+            background: #333;
+        }
+
+        .register-tip {
+            font-size: 15px;
+            text-align: center;
+            margin-top: 8px;
+            color: #797777;
+        }
+
+        .register-tip .register-link {
+            color: #000;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .login-card .form-group label {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        #loginView .login-card .form-group input {
+            font-size: 17px;
+            background: #FAF8EC;
+        }
+
+        .login-card .form-group {
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .auth-wrapper {
+                flex-direction: column;
+            }
+
+            .auth-wrapper .illustration {
+                display: none;
+            }
+
+            .auth-wrapper::after {
+                width: 100%;
+                min-width: 0;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <!-- 登录界面 -->
+        <div id="loginView" class="auth-wrapper">
+            <div class="illustration">
+                <img src="assets/login4.png" alt="审稿系统示意图">
+            </div>
+            <div class="login-card">
+                <p class="welcome">Welcome !</p>
+                <h2 class="signin-title">Sign in to</h2>
+                <p class="subtitle">Secure access to the peer-review portal</p>
+
+                <div id="loginError" class="alert alert-error hidden"></div>
+
+                <div class="form-group">
+                    <label>User name</label>
+                    <input type="text" id="username" placeholder="Enter your user name" value="admin">
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Enter your Password" value="admin123">
+                    </div>
+                </div>
+
+                <div class="helper-row">
+                    <label class="remember"><input type="checkbox" id="rememberMe"> Remember me</label>
+                    <a href="#" class="forgot">Forgot Password ?</a>
+                </div>
+
+                <button class="btn btn-dark" onclick="login()">Login</button>
+
+                <p class="register-tip">Don’t have an Account ? <a href="#" class="register-link">Register</a></p>
+            </div>
+        </div>
+
+        <!-- 主界面 -->
+        <div id="mainView" class="hidden">
+            <div class="header">
+                <h1>📚 科研审稿系统</h1>
+                <div class="user-info">
+                    <span class="user-badge" id="userBadge"></span>
+                    <button class="btn btn-danger" onclick="logout()">退出登录</button>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('dashboard')">📊 仪表板</button>
+                    <button class="tab" onclick="showTab('papers')" id="tabPapers">📄 论文管理</button>
+                    <button class="tab" onclick="showTab('reviews')" id="tabReviews">📝 审稿管理</button>
+                    <button class="tab" onclick="showTab('assignments')" id="tabAssignments">👥 分配审稿</button>
+                    <button class="tab" onclick="showTab('users')" id="tabUsers">👤 用户管理</button>
+                    <button class="tab" onclick="showTab('system')" id="tabSystem">⚙️ 系统状态</button>
+                </div>
+
+                <!-- 仪表板 -->
+                <div id="dashboard" class="tab-content active">
+                    <h2>系统概览</h2>
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card">
+                            <h3 id="statPapers">0</h3>
+                            <p>论文总数</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="statUsers">0</h3>
+                            <p>用户总数</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="statCache">0%</h3>
+                            <p>缓存命中率</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="statBlocks">0</h3>
+                            <p>空闲块数</p>
+                        </div>
+                    </div>
+                    <div id="dashboardContent"></div>
+                </div>
+
+                <!-- 论文管理 -->
+                <div id="papers" class="tab-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>📄 论文管理</h2>
+                        <button class="btn btn-primary" onclick="showSubmitPaperModal()" id="btnSubmitPaper">📝 提交论文</button>
+                    </div>
+                    <div id="papersList" class="paper-list"></div>
+                </div>
+
+                <!-- 审稿管理 -->
+                <div id="reviews" class="tab-content">
+                    <h2>📝 审稿管理</h2>
+                    <div id="reviewerInfo"></div>
+                    <div id="reviewsList"></div>
+                </div>
+
+                <!-- 分配审稿 (编辑专用) -->
+                <div id="assignments" class="tab-content">
+                    <h2>👥 分配审稿人</h2>
+                    <div id="assignmentsList"></div>
+                </div>
+
+                <!-- 用户管理 -->
+                <div id="users" class="tab-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>👤 用户管理</h2>
+                        <button class="btn btn-primary" onclick="showCreateUserModal()">➕ 创建用户</button>
+                    </div>
+                    <div id="usersList"></div>
+                </div>
+
+                <!-- 系统状态 -->
+                <div id="system" class="tab-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>⚙️ 系统状态</h2>
+                        <div>
+                            <button class="btn btn-success" onclick="createBackup()">💾 创建备份</button>
+                        </div>
+                    </div>
+                    <div id="systemInfo"></div>
+                    <div id="backupsList" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提交论文模态框 -->
+    <div id="submitPaperModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📝 提交论文</h2>
+                <span class="close-modal" onclick="closeModal('submitPaperModal')">&times;</span>
+            </div>
+            <div class="form-group">
+                <label>论文文件 (PDF格式，可选)</label>
+                <div class="file-upload-area" id="fileUploadArea" onclick="triggerFileUpload()">
+                    <div id="uploadPrompt">📄 点击或拖拽文件到此处上传</div>
+                    <div class="file-name" id="fileName"></div>
+                </div>
+                <input type="file" id="paperFile" accept=".pdf" style="display: none;" onchange="handleFileSelect(this)">
+            </div>
+            <div class="form-group">
+                <label>标题 *</label>
+                <input type="text" id="paperTitle" placeholder="请输入论文标题">
+            </div>
+            <div class="form-group">
+                <label>摘要 *</label>
+                <textarea id="paperAbstract" rows="4" placeholder="请输入论文摘要"></textarea>
+            </div>
+            <div class="form-group">
+                <label>作者（逗号分隔）</label>
+                <input type="text" id="paperAuthors" placeholder="例如：张三,李四,王五">
+            </div>
+            <div class="form-group">
+                <label>关键词（逗号分隔）</label>
+                <input type="text" id="paperKeywords" placeholder="例如：机器学习,深度学习,神经网络">
+            </div>
+            <div class="form-group">
+                <label>研究领域</label>
+                <select id="paperArea">
+                    <option value="人工智能">人工智能</option>
+                    <option value="机器学习">机器学习</option>
+                    <option value="计算机视觉">计算机视觉</option>
+                    <option value="自然语言处理">自然语言处理</option>
+                    <option value="软件工程">软件工程</option>
+                    <option value="数据库">数据库</option>
+                    <option value="网络安全">网络安全</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="submitPaper()">提交论文</button>
+        </div>
+    </div>
+
+    <!-- 论文详情模态框 -->
+    <div id="paperDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📄 论文详情</h2>
+                <span class="close-modal" onclick="closeModal('paperDetailModal')">&times;</span>
+            </div>
+            <div id="paperDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- 提交评审模态框 -->
+    <div id="submitReviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📝 提交评审意见</h2>
+                <span class="close-modal" onclick="closeModal('submitReviewModal')">&times;</span>
+            </div>
+            <div id="reviewPaperInfo"></div>
+            <div class="form-group">
+                <label>评分 (1-10分)</label>
+                <div class="rating-input">
+                    <input type="range" id="reviewScore" min="1" max="10" value="5" oninput="updateScoreDisplay()">
+                    <span class="rating-value" id="scoreDisplay">5</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>评审意见 *</label>
+                <textarea id="reviewComments" rows="6" placeholder="请详细描述您的评审意见，包括论文的优点、不足和改进建议..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>保密意见（仅编辑可见）</label>
+                <textarea id="confidentialComments" rows="3" placeholder="请输入仅供编辑查看的保密意见..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>推荐决定</label>
+                <select id="reviewRecommendation">
+                    <option value="1">接受 (Accept)</option>
+                    <option value="2">拒绝 (Reject)</option>
+                    <option value="3">大修 (Major Revision)</option>
+                    <option value="4">小修 (Minor Revision)</option>
+                </select>
+            </div>
+            <input type="hidden" id="reviewPaperId">
+            <button class="btn btn-primary" onclick="submitReview()">提交评审</button>
+        </div>
+    </div>
+
+    <!-- 分配审稿人模态框 -->
+    <div id="assignReviewerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>👥 分配审稿人</h2>
+                <span class="close-modal" onclick="closeModal('assignReviewerModal')">&times;</span>
+            </div>
+            <div id="assignPaperInfo"></div>
+            <div class="form-group">
+                <label>选择分配方式</label>
+                <div style="margin-bottom: 15px;">
+                    <button class="btn btn-info" onclick="autoAssignReviewers()">🤖 自动分配（推荐3位审稿人）</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>或手动选择审稿人</label>
+                <div id="reviewerCheckboxes" class="checkbox-group"></div>
+            </div>
+            <input type="hidden" id="assignPaperId">
+            <button class="btn btn-primary" onclick="manualAssignReviewers()">确认分配</button>
+        </div>
+    </div>
+
+    <!-- 编辑决定模态框 -->
+    <div id="decisionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚖️ 编辑决定</h2>
+                <span class="close-modal" onclick="closeModal('decisionModal')">&times;</span>
+            </div>
+            <div id="decisionPaperInfo"></div>
+            <div id="decisionReviewsSummary"></div>
+            <div class="form-group">
+                <label>最终决定</label>
+                <div class="decision-buttons">
+                    <button class="btn btn-success" onclick="makeDecision(1)">✅ 接受</button>
+                    <button class="btn btn-danger" onclick="makeDecision(2)">❌ 拒绝</button>
+                    <button class="btn btn-warning" onclick="makeDecision(3)">📝 大修</button>
+                    <button class="btn btn-info" onclick="makeDecision(4)">✏️ 小修</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>决定说明</label>
+                <textarea id="decisionComments" rows="4" placeholder="请输入决定说明..."></textarea>
+            </div>
+            <input type="hidden" id="decisionPaperId">
+        </div>
+    </div>
+
+    <!-- 修订论文模态框 -->
+    <div id="reviseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📝 提交修订版本</h2>
+                <span class="close-modal" onclick="closeModal('reviseModal')">&times;</span>
+            </div>
+            <div class="form-group">
+                <label>修订版论文文件 (PDF格式) *</label>
+                <div class="file-upload-area" id="reviseFileUploadArea" onclick="triggerReviseFileUpload()">
+                    <div id="reviseUploadPrompt">📄 点击或拖拽文件到此处上传</div>
+                    <div class="file-name" id="reviseFileName"></div>
+                </div>
+                <input type="file" id="revisePaperFile" accept=".pdf" style="display: none;" onchange="handleReviseFileSelect(this)">
+            </div>
+            <div class="form-group">
+                <label>修订说明 *</label>
+                <textarea id="reviseDescription" rows="4" placeholder="请描述本次修订的主要内容，针对审稿意见的修改..."></textarea>
+            </div>
+            <input type="hidden" id="revisePaperId">
+            <button class="btn btn-primary" onclick="submitRevision()">提交修订</button>
+        </div>
+    </div>
+
+    <!-- 创建用户模态框 -->
+    <div id="createUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>➕ 创建用户</h2>
+                <span class="close-modal" onclick="closeModal('createUserModal')">&times;</span>
+            </div>
+            <div class="form-group">
+                <label>用户名 *</label>
+                <input type="text" id="newUsername" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label>密码 *</label>
+                <input type="password" id="newPassword" placeholder="请输入密码">
+            </div>
+            <div class="form-group">
+                <label>邮箱</label>
+                <input type="email" id="newEmail" placeholder="请输入邮箱">
+            </div>
+            <div class="form-group">
+                <label>全名</label>
+                <input type="text" id="newFullname" placeholder="请输入全名">
+            </div>
+            <div class="form-group">
+                <label>角色</label>
+                <select id="newRole" onchange="toggleResearchAreas()">
+                    <option value="4">作者 (Author)</option>
+                    <option value="3">审稿人 (Reviewer)</option>
+                    <option value="2">编辑 (Editor)</option>
+                    <option value="1">管理员 (Admin)</option>
+                </select>
+            </div>
+            <div class="form-group hidden" id="researchAreasGroup">
+                <label>研究领域（审稿人专用，逗号分隔）</label>
+                <input type="text" id="researchAreas" placeholder="例如：机器学习,计算机视觉">
+            </div>
+            <button class="btn btn-primary" onclick="createUser()">创建</button>
+        </div>
+    </div>
+
+    <!-- 编辑用户模态框 -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ 编辑用户</h2>
+                <span class="close-modal" onclick="closeModal('editUserModal')">&times;</span>
+            </div>
+            <input type="hidden" id="editUserId">
+            <div class="form-group">
+                <label>邮箱</label>
+                <input type="email" id="editEmail" placeholder="请输入邮箱">
+            </div>
+            <div class="form-group">
+                <label>全名</label>
+                <input type="text" id="editFullname" placeholder="请输入全名">
+            </div>
+            <div class="form-group">
+                <label>新密码（留空表示不修改）</label>
+                <input type="password" id="editPassword" placeholder="请输入新密码">
+            </div>
+            <button class="btn btn-primary" onclick="updateUser()">保存</button>
+        </div>
+    </div>
+
+    <!-- 查看备份模态框 -->
+    <div id="backupsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📁 备份列表</h2>
+                <span class="close-modal" onclick="closeModal('backupsModal')">&times;</span>
+            </div>
+            <div id="backupsListContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 全局变量 ====================
+        let sessionToken = '';
+        let currentUser = null;
+        let selectedFile = null;
+        let reviseFile = null;
+        let selectedReviewers = new Set();
+
+        // 角色映射
+        const roleMap = {
+            1: '管理员',
+            2: '编辑',
+            3: '审稿人',
+            4: '作者'
+        };
+
+        const statusMap = {
+            1: { text: '已提交', class: 'status-submitted' },
+            2: { text: '审稿中', class: 'status-review' },
+            3: { text: '需修订', class: 'status-revision' },
+            4: { text: '已修订', class: 'status-revision' },
+            5: { text: '已接收', class: 'status-accepted' },
+            6: { text: '已拒稿', class: 'status-rejected' }
+        };
+
+        const decisionMap = {
+            1: '接受',
+            2: '拒绝',
+            3: '大修',
+            4: '小修'
+        };
+
+        // ==================== Toast通知 ====================
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ==================== API请求封装 ====================
+        async function apiRequest(url, options = {}) {
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': sessionToken ? `Bearer ${sessionToken}` : '',
+                ...(options.headers || {})
+            };
+
+            const fetchOptions = {
+                ...options,
+                headers: headers
+            };
+
+            try {
+                console.log('API请求:', url, fetchOptions);
+                const response = await fetch(url, fetchOptions);
+                const data = await response.json();
+                console.log('API响应:', data);
+                return data;
+            } catch (error) {
+                console.error('API请求失败:', error);
+                throw error;
+            }
+        }
+
+        // ==================== 文件处理 ====================
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // 触发文件上传
+        function triggerFileUpload() {
+            document.getElementById('paperFile').click();
+        }
+
+        // 触发修订文件上传
+        function triggerReviseFileUpload() {
+            document.getElementById('revisePaperFile').click();
+        }
+
+        // 处理文件选择
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            if (file) {
+                if (file.type !== 'application/pdf') {
+                    showToast('请上传PDF格式的文件', 'error');
+                    input.value = '';
+                    return;
+                }
+                selectedFile = file;
+                document.getElementById('fileName').textContent = `已选择: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                document.getElementById('fileUploadArea').classList.add('has-file');
+                document.getElementById('uploadPrompt').textContent = '✅ 文件已选择，点击更换';
+            }
+        }
+
+        // 处理修订文件选择
+        function handleReviseFileSelect(input) {
+            const file = input.files[0];
+            if (file) {
+                if (file.type !== 'application/pdf') {
+                    showToast('请上传PDF格式的文件', 'error');
+                    input.value = '';
+                    return;
+                }
+                reviseFile = file;
+                document.getElementById('reviseFileName').textContent = `已选择: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                document.getElementById('reviseFileUploadArea').classList.add('has-file');
+                document.getElementById('reviseUploadPrompt').textContent = '✅ 文件已选择，点击更换';
+            }
+        }
+
+        // 设置拖拽上传
+        function setupDragDrop(areaId, inputId, callback) {
+            const area = document.getElementById(areaId);
+            if (!area) return;
+
+            area.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+
+            area.addEventListener('dragleave', function() {
+                this.classList.remove('dragover');
+            });
+
+            area.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    const input = document.getElementById(inputId);
+                    input.files = e.dataTransfer.files;
+                    callback(input);
+                }
+            });
+        }
+
+        // ==================== 登录/登出 ====================
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                showError('loginError', '请输入用户名和密码');
+                return;
+            }
+
+            try {
+                const result = await apiRequest('/api/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (result.success) {
+                    sessionToken = result.session_token;
+                    currentUser = {
+                        id: result.user_id,
+                        role: result.role,
+                        username: username
+                    };
+
+                    document.getElementById('loginView').classList.add('hidden');
+                    document.getElementById('mainView').classList.remove('hidden');
+                    document.getElementById('userBadge').textContent = username + ' - ' + roleMap[result.role];
+
+                    updateTabsVisibility();
+                    loadDashboard();
+                    showToast('登录成功', 'success');
+                } else {
+                    showError('loginError', result.message || '登录失败');
+                }
+            } catch (error) {
+                showError('loginError', '网络错误：' + error.message);
+            }
+        }
+
+        function logout() {
+            sessionToken = '';
+            currentUser = null;
+            document.getElementById('loginView').classList.remove('hidden');
+            document.getElementById('mainView').classList.add('hidden');
+            
+            // 重置所有标签页
+            document.querySelectorAll('.tab').forEach(tab => tab.style.display = '');
+            
+            showToast('已退出登录', 'info');
+        }
+
+        // ==================== 权限控制 ====================
+        function updateTabsVisibility() {
+            const role = currentUser.role;
+            
+            // 重置所有标签页显示
+            document.querySelectorAll('.tab').forEach(tab => tab.style.display = '');
+            const btnSubmit = document.getElementById('btnSubmitPaper');
+            if (btnSubmit) btnSubmit.style.display = '';
+            
+            // 根据角色隐藏不需要的标签页
+            if (role === 4) { // 作者
+                document.getElementById('tabReviews').style.display = 'none';
+                document.getElementById('tabAssignments').style.display = 'none';
+                document.getElementById('tabUsers').style.display = 'none';
+                document.getElementById('tabSystem').style.display = 'none';
+            } else if (role === 3) { // 审稿人
+                document.getElementById('tabAssignments').style.display = 'none';
+                document.getElementById('tabUsers').style.display = 'none';
+                document.getElementById('tabSystem').style.display = 'none';
+                if (btnSubmit) btnSubmit.style.display = 'none';
+            } else if (role === 2) { // 编辑
+                document.getElementById('tabUsers').style.display = 'none';
+                if (btnSubmit) btnSubmit.style.display = 'none';
+            }
+            // 管理员可以看到所有
+        }
+
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.classList.remove('hidden');
+            setTimeout(() => element.classList.add('hidden'), 5000);
+        }
+
+        // ==================== 标签页切换 ====================
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            switch(tabName) {
+                case 'dashboard': loadDashboard(); break;
+                case 'papers': loadPapers(); break;
+                case 'reviews': loadReviews(); break;
+                case 'assignments': loadAssignments(); break;
+                case 'users': loadUsers(); break;
+                case 'system': loadSystemInfo(); break;
+            }
+        }
+
+        // ==================== 加载仪表板 ====================
+        async function loadDashboard() {
+            try {
+                const status = await apiRequest('/api/status', { method: 'POST' });
+                
+                if (status.success) {
+                    document.getElementById('statPapers').textContent = status.total_papers || 0;
+                    document.getElementById('statUsers').textContent = status.active_users || 0;
+                    document.getElementById('statCache').textContent = ((status.cache_hit_rate || 0) * 100).toFixed(1) + '%';
+                    document.getElementById('statBlocks').textContent = status.free_blocks || 0;
+                }
+
+                const papers = await apiRequest('/api/papers', { 
+                    method: 'POST',
+                    body: JSON.stringify({})
+                });
+
+                if (papers.success && papers.papers && papers.papers.length > 0) {
+                    const html = `
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">📄 最近论文</h3>
+                        ${papers.papers.slice(0, 5).map(paper => `
+                            <div class="paper-item">
+                                <h3>${escapeHtml(paper.title)}</h3>
+                                <p>${paper.abstract ? escapeHtml(paper.abstract.substring(0, 150)) + '...' : '无摘要'}</p>
+                                <p><span class="paper-status ${statusMap[paper.status]?.class || ''}">${statusMap[paper.status]?.text || '未知'}</span></p>
+                            </div>
+                        `).join('')}
+                    `;
+                    document.getElementById('dashboardContent').innerHTML = html;
+                } else {
+                    document.getElementById('dashboardContent').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <p>暂无论文数据</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载仪表板失败:', error);
+            }
+        }
+
+        // ==================== 加载论文列表 ====================
+        async function loadPapers() {
+            try {
+                const result = await apiRequest('/api/papers', { 
+                    method: 'POST',
+                    body: JSON.stringify({})
+                });
+
+                if (result.success && result.papers && result.papers.length > 0) {
+                    const html = result.papers.map(paper => {
+                        let actions = `<button class="btn btn-info btn-sm" onclick="viewPaperDetail(${paper.id})">📋 查看详情</button>`;
+                        
+                        // 作者可以下载论文
+                        if (currentUser.role === 4 || currentUser.role === 1) {
+                            actions += `<button class="btn btn-secondary btn-sm" onclick="downloadPaper(${paper.id})">⬇️ 下载</button>`;
+                            if (paper.status === 3) { // 需要修订
+                                actions += `<button class="btn btn-warning btn-sm" onclick="showReviseModal(${paper.id})">📝 提交修订</button>`;
+                            }
+                        }
+                        
+                        // 审稿人可以下载论文
+                        if (currentUser.role === 3) {
+                            actions += `<button class="btn btn-secondary btn-sm" onclick="downloadPaper(${paper.id})">⬇️ 下载</button>`;
+                        }
+                        
+                        // 编辑可以分配审稿人和做决定
+                        if (currentUser.role === 2 || currentUser.role === 1) {
+                            actions += `<button class="btn btn-secondary btn-sm" onclick="downloadPaper(${paper.id})">⬇️ 下载</button>`;
+                            if (paper.status === 1) {
+                                actions += `<button class="btn btn-primary btn-sm" onclick="showAssignModal(${paper.id})">👥 分配审稿人</button>`;
+                            }
+                            if (paper.status === 2 || paper.status === 4) {
+                                actions += `<button class="btn btn-success btn-sm" onclick="showDecisionModal(${paper.id})">⚖️ 编辑决定</button>`;
+                            }
+                        }
+                        
+                        return `
+                            <div class="paper-item">
+                                <h3>${escapeHtml(paper.title)} ${paper.version > 1 ? `<span class="version-tag">v${paper.version}</span>` : ''}</h3>
+                                <p>${paper.abstract ? escapeHtml(paper.abstract.substring(0, 200)) + '...' : '无摘要'}</p>
+                                <p><strong>作者:</strong> ${escapeHtml(paper.authors) || '未知'}</p>
+                                <p><strong>研究领域:</strong> ${escapeHtml(paper.research_area) || '未指定'}</p>
+                                <p><span class="paper-status ${statusMap[paper.status]?.class || ''}">${statusMap[paper.status]?.text || '未知'}</span></p>
+                                <div class="action-buttons">${actions}</div>
+                            </div>
+                        `;
+                    }).join('');
+                    document.getElementById('papersList').innerHTML = html;
+                } else {
+                    document.getElementById('papersList').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <p>暂无论文</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载论文失败:', error);
+                document.getElementById('papersList').innerHTML = '<p class="alert alert-error">加载失败</p>';
+            }
+        }
+
+        // ==================== 查看论文详情 ====================
+        async function viewPaperDetail(paperId) {
+            try {
+                const result = await apiRequest('/api/paper/' + paperId, { method: 'POST' });
+                
+                if (result.success && result.paper) {
+                    const paper = result.paper;
+                    let html = `
+                        <div class="detail-section">
+                            <h4>📄 基本信息</h4>
+                            <div class="detail-row"><span class="detail-label">标题:</span><span class="detail-value">${escapeHtml(paper.title)}</span></div>
+                            <div class="detail-row"><span class="detail-label">作者:</span><span class="detail-value">${escapeHtml(paper.authors) || '未知'}</span></div>
+                            <div class="detail-row"><span class="detail-label">研究领域:</span><span class="detail-value">${escapeHtml(paper.research_area) || '未指定'}</span></div>
+                            <div class="detail-row"><span class="detail-label">版本:</span><span class="detail-value">v${paper.version || 1}</span></div>
+                            <div class="detail-row"><span class="detail-label">状态:</span><span class="detail-value"><span class="paper-status ${statusMap[paper.status]?.class || ''}">${statusMap[paper.status]?.text || '未知'}</span></span></div>
+                            <div class="detail-row"><span class="detail-label">提交时间:</span><span class="detail-value">${paper.submit_time ? new Date(paper.submit_time * 1000).toLocaleString() : '未知'}</span></div>
+                        </div>
+                        <div class="detail-section">
+                            <h4>📝 摘要</h4>
+                            <p>${escapeHtml(paper.abstract) || '无摘要'}</p>
+                        </div>
+                    `;
+                    
+                    // 显示评审意见（如果有）
+                    if (paper.reviews && paper.reviews.length > 0) {
+                        html += `
+                            <div class="detail-section">
+                                <h4>📋 评审意见 (${paper.reviews.length}条)</h4>
+                                ${paper.reviews.map((review, index) => `
+                                    <div class="review-card">
+                                        <h4>审稿人 ${index + 1}</h4>
+                                        <p><strong>评分:</strong> <span class="score-display">${review.score}/10</span></p>
+                                        <p><strong>推荐:</strong> ${decisionMap[review.recommendation] || '未知'}</p>
+                                        <p><strong>意见:</strong> ${escapeHtml(review.comments) || '无'}</p>
+                                        ${review.confidential_comments ? 
+                                            `<p style="color: #e74c3c;"><strong>保密意见:</strong> ${escapeHtml(review.confidential_comments)}</p>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+                    
+                    document.getElementById('paperDetailContent').innerHTML = html;
+                    document.getElementById('paperDetailModal').classList.add('active');
+                } else {
+                    showToast('获取论文详情失败', 'error');
+                }
+            } catch (error) {
+                showToast('获取论文详情失败: ' + error.message, 'error');
+            }
+        }
+
+        // ==================== 下载论文 ====================
+        async function downloadPaper(paperId) {
+            try {
+                showToast('正在准备下载...', 'info');
+                const result = await apiRequest('/api/download/' + paperId, { method: 'POST' });
+                
+                if (result.success && result.content) {
+                    const byteCharacters = atob(result.content);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: 'application/pdf' });
+                    
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `paper_${paperId}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                    
+                    showToast('论文下载成功', 'success');
+                } else {
+                    showToast('下载失败: ' + (result.message || '论文内容为空'), 'error');
+                }
+            } catch (error) {
+                showToast('下载失败: ' + error.message, 'error');
+            }
+        }
+
+        // ==================== 加载审稿列表 ====================
+        async function loadReviews() {
+            try {
+                if (currentUser.role === 3) { // 审稿人
+                    document.getElementById('reviewerInfo').innerHTML = `
+                        <div class="alert alert-info">
+                            <strong>📋 您的待审稿论文</strong> - 请及时完成评审
+                        </div>
+                    `;
+                    
+                    const result = await apiRequest('/api/my-reviews', { method: 'POST' });
+                    
+                    if (result.success && result.papers && result.papers.length > 0) {
+                        const html = result.papers.map(paper => `
+                            <div class="paper-item">
+                                <h3>${escapeHtml(paper.title)}</h3>
+                                <p>${paper.abstract ? escapeHtml(paper.abstract.substring(0, 150)) + '...' : '无摘要'}</p>
+                                <p><strong>研究领域:</strong> ${escapeHtml(paper.research_area) || '未指定'}</p>
+                                <p><span class="paper-status ${statusMap[paper.status]?.class || ''}">${statusMap[paper.status]?.text || '未知'}</span></p>
+                                <div class="action-buttons">
+                                    <button class="btn btn-secondary btn-sm" onclick="downloadPaper(${paper.id})">⬇️ 下载论文</button>
+                                    <button class="btn btn-primary btn-sm" onclick="showReviewModal(${paper.id}, '${escapeHtml(paper.title).replace(/'/g, "\\'")}')">📝 提交评审</button>
+                                </div>
+                            </div>
+                        `).join('');
+                        document.getElementById('reviewsList').innerHTML = html;
+                    } else {
+                        document.getElementById('reviewsList').innerHTML = `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">✅</div>
+                                <p>暂无待审稿论文</p>
+                            </div>
+                        `;
+                    }
+                } else { // 编辑或管理员
+                    document.getElementById('reviewerInfo').innerHTML = `
+                        <div class="alert alert-info">
+                            <strong>📊 审稿进度总览</strong> - 查看和管理所有审稿状态
+                        </div>
+                    `;
+                    
+                    const result = await apiRequest('/api/papers', { 
+                        method: 'POST',
+                        body: JSON.stringify({})
+                    });
+                    
+                    if (result.success && result.papers) {
+                        const reviewPapers = result.papers.filter(p => p.status >= 2);
+                        if (reviewPapers.length > 0) {
+                            const html = reviewPapers.map(paper => `
+                                <div class="paper-item">
+                                    <h3>${escapeHtml(paper.title)}</h3>
+                                    <p><span class="paper-status ${statusMap[paper.status]?.class || ''}">${statusMap[paper.status]?.text || '未知'}</span></p>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-info btn-sm" onclick="viewPaperDetail(${paper.id})">📋 查看详情</button>
+                                        ${(paper.status === 2 || paper.status === 4) ? `<button class="btn btn-success btn-sm" onclick="showDecisionModal(${paper.id})">⚖️ 编辑决定</button>` : ''}
+                                    </div>
+                                </div>
+                            `).join('');
+                            document.getElementById('reviewsList').innerHTML = html;
+                        } else {
+                            document.getElementById('reviewsList').innerHTML = `
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📭</div>
+                                    <p>暂无审稿中的论文</p>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('加载审稿列表失败:', error);
+            }
+        }
+
+        // ==================== 加载待分配列表 ====================
+        async function loadAssignments() {
+            try {
+                const result = await apiRequest('/api/papers', { 
+                    method: 'POST',
+                    body: JSON.stringify({})
+                });
+                
+                if (result.success && result.papers) {
+                    const pendingPapers = result.papers.filter(p => p.status === 1);
+                    
+                    if (pendingPapers.length > 0) {
+                        const html = pendingPapers.map(paper => `
+                            <div class="paper-item">
+                                <h3>${escapeHtml(paper.title)}</h3>
+                                <p>${paper.abstract ? escapeHtml(paper.abstract.substring(0, 200)) + '...' : '无摘要'}</p>
+                                <p><strong>研究领域:</strong> ${escapeHtml(paper.research_area) || '未指定'}</p>
+                                <p><span class="paper-status status-submitted">待分配审稿人</span></p>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary btn-sm" onclick="showAssignModal(${paper.id})">👥 分配审稿人</button>
+                                </div>
+                            </div>
+                        `).join('');
+                        document.getElementById('assignmentsList').innerHTML = html;
+                    } else {
+                        document.getElementById('assignmentsList').innerHTML = `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">✅</div>
+                                <p>所有论文已分配审稿人</p>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('加载待分配列表失败:', error);
+            }
+        }
+
+        // ==================== 加载用户列表 ====================
+        async function loadUsers() {
+            try {
+                const result = await apiRequest('/api/users', { method: 'POST' });
+
+                if (result.success && result.users) {
+                    const html = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>用户名</th>
+                                    <th>全名</th>
+                                    <th>角色</th>
+                                    <th>邮箱</th>
+                                    <th>研究领域</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${result.users.map(user => `
+                                    <tr>
+                                        <td>${user.id}</td>
+                                        <td>${escapeHtml(user.username)}</td>
+                                        <td>${escapeHtml(user.full_name) || '-'}</td>
+                                        <td>${roleMap[user.role]}</td>
+                                        <td>${escapeHtml(user.email) || '-'}</td>
+                                        <td>${user.research_areas ? user.research_areas.join(', ') : '-'}</td>
+                                        <td>${user.is_active !== false ? '✅ 活跃' : '❌ 禁用'}</td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm" onclick="editUser(${user.id}, '${escapeHtml(user.email) || ''}', '${escapeHtml(user.full_name) || ''}')">✏️</button>
+                                            <button class="btn ${user.is_active !== false ? 'btn-danger' : 'btn-success'} btn-sm" onclick="toggleUserStatus(${user.id})">${user.is_active !== false ? '🔒' : '🔓'}</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                    document.getElementById('usersList').innerHTML = html;
+                } else {
+                    document.getElementById('usersList').innerHTML = '<p>暂无用户</p>';
+                }
+            } catch (error) {
+                console.error('加载用户失败:', error);
+            }
+        }
+
+        // ==================== 加载系统信息 ====================
+        async function loadSystemInfo() {
+            try {
+                const result = await apiRequest('/api/status', { method: 'POST' });
+
+                if (result.success) {
+                    const html = `
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <h3>${result.total_blocks || 0}</h3>
+                                <p>总块数</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>${result.free_blocks || 0}</h3>
+                                <p>空闲块数</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>${result.total_inodes || 0}</h3>
+                                <p>总INode数</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>${result.free_inodes || 0}</h3>
+                                <p>空闲INode数</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>${result.cache_hits || 0}</h3>
+                                <p>缓存命中</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>${result.cache_misses || 0}</h3>
+                                <p>缓存未命中</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>${((result.cache_hit_rate || 0) * 100).toFixed(1)}%</h3>
+                                <p>命中率</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>${result.total_papers || 0}</h3>
+                                <p>论文总数</p>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('systemInfo').innerHTML = html;
+                }
+                
+                // 加载备份列表
+                await loadBackupsList();
+            } catch (error) {
+                console.error('加载系统信息失败:', error);
+            }
+        }
+
+        // ==================== 备份管理 ====================
+        async function createBackup() {
+            try {
+                const result = await apiRequest('/api/backup', { method: 'POST' });
+                if (result.success) {
+                    showToast('备份创建成功！路径: ' + result.backup_path, 'success');
+                    await loadBackupsList();
+                } else {
+                    showToast('备份失败：' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('备份失败：' + error.message, 'error');
+            }
+        }
+
+        async function loadBackupsList() {
+            try {
+                const result = await apiRequest('/api/backups', { method: 'POST' });
+                
+                if (result.success && result.backups && result.backups.length > 0) {
+                    const html = `
+                        <h3 style="margin-bottom: 15px;">📁 备份列表</h3>
+                        ${result.backups.map(backup => {
+                            // 从文件名提取时间戳
+                            const match = backup.match(/snapshot_(\d+)/);
+                            const timestamp = match ? parseInt(match[1]) : 0;
+                            const date = timestamp ? new Date(timestamp * 1000).toLocaleString() : '未知时间';
+                            return `
+                                <div class="backup-item">
+                                    <div class="backup-info">
+                                        <strong>💾 ${escapeHtml(backup)}</strong>
+                                        <div class="backup-time">创建时间: ${date}</div>
+                                    </div>
+                                    <button class="btn btn-info btn-sm" onclick="showToast('恢复功能开发中...', 'info')">🔄 恢复</button>
+                                </div>
+                            `;
+                        }).join('')}
+                    `;
+                    document.getElementById('backupsList').innerHTML = html;
+                } else {
+                    document.getElementById('backupsList').innerHTML = `
+                        <h3 style="margin-bottom: 15px;">📁 备份列表</h3>
+                        <div class="empty-state" style="padding: 30px;">
+                            <p>暂无备份</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载备份列表失败:', error);
+            }
+        }
+
+        // ==================== 模态框显示 ====================
+        function showSubmitPaperModal() {
+            selectedFile = null;
+            document.getElementById('paperFile').value = '';
+            document.getElementById('fileName').textContent = '';
+            document.getElementById('fileUploadArea').classList.remove('has-file');
+            document.getElementById('uploadPrompt').textContent = '📄 点击或拖拽文件到此处上传';
+            document.getElementById('paperTitle').value = '';
+            document.getElementById('paperAbstract').value = '';
+            document.getElementById('paperAuthors').value = '';
+            document.getElementById('paperKeywords').value = '';
+            document.getElementById('submitPaperModal').classList.add('active');
+        }
+
+        function showCreateUserModal() {
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('newEmail').value = '';
+            document.getElementById('newFullname').value = '';
+            document.getElementById('newRole').value = '4';
+            document.getElementById('researchAreas').value = '';
+            document.getElementById('researchAreasGroup').classList.add('hidden');
+            document.getElementById('createUserModal').classList.add('active');
+        }
+
+        function showReviewModal(paperId, paperTitle) {
+            document.getElementById('reviewPaperId').value = paperId;
+            document.getElementById('reviewPaperInfo').innerHTML = `
+                <div class="alert alert-info">
+                    <strong>论文:</strong> ${paperTitle}
+                </div>
+            `;
+            document.getElementById('reviewScore').value = 5;
+            document.getElementById('scoreDisplay').textContent = '5';
+            document.getElementById('reviewComments').value = '';
+            document.getElementById('confidentialComments').value = '';
+            document.getElementById('reviewRecommendation').value = '1';
+            document.getElementById('submitReviewModal').classList.add('active');
+        }
+
+        async function showAssignModal(paperId) {
+            document.getElementById('assignPaperId').value = paperId;
+            selectedReviewers.clear();
+            
+            try {
+                const result = await apiRequest('/api/reviewers', { method: 'POST' });
+                
+                if (result.success && result.users) {
+                    const reviewers = result.users.filter(u => u.role === 3 && u.is_active !== false);
+                    
+                    if (reviewers.length > 0) {
+                        const html = reviewers.map(reviewer => `
+                            <div class="checkbox-item" id="reviewer-${reviewer.id}" onclick="toggleReviewer(${reviewer.id})">
+                                <span><strong>${escapeHtml(reviewer.username)}</strong></span>
+                                <small style="margin-left: 5px;">(${reviewer.research_areas ? reviewer.research_areas.join(', ') : '无研究领域'})</small>
+                            </div>
+                        `).join('');
+                        document.getElementById('reviewerCheckboxes').innerHTML = html;
+                    } else {
+                        document.getElementById('reviewerCheckboxes').innerHTML = '<p>暂无可用审稿人，请先创建审稿人用户</p>';
+                    }
+                }
+                
+                document.getElementById('assignReviewerModal').classList.add('active');
+            } catch (error) {
+                showToast('加载审稿人列表失败', 'error');
+            }
+        }
+
+        function toggleReviewer(reviewerId) {
+            const element = document.getElementById('reviewer-' + reviewerId);
+            if (selectedReviewers.has(reviewerId)) {
+                selectedReviewers.delete(reviewerId);
+                element.classList.remove('selected');
+            } else {
+                selectedReviewers.add(reviewerId);
+                element.classList.add('selected');
+            }
+        }
+
+        async function showDecisionModal(paperId) {
+            document.getElementById('decisionPaperId').value = paperId;
+            document.getElementById('decisionComments').value = '';
+            
+            try {
+                const result = await apiRequest('/api/paper/' + paperId, { method: 'POST' });
+                
+                if (result.success && result.paper) {
+                    const paper = result.paper;
+                    
+                    document.getElementById('decisionPaperInfo').innerHTML = `
+                        <div class="alert alert-info">
+                            <strong>论文:</strong> ${escapeHtml(paper.title)}
+                        </div>
+                    `;
+                    
+                    if (paper.reviews && paper.reviews.length > 0) {
+                        const avgScore = paper.reviews.reduce((sum, r) => sum + r.score, 0) / paper.reviews.length;
+                        document.getElementById('decisionReviewsSummary').innerHTML = `
+                            <div class="detail-section">
+                                <h4>📊 评审摘要</h4>
+                                <p><strong>评审人数:</strong> ${paper.reviews.length}</p>
+                                <p><strong>平均分:</strong> <span class="score-display">${avgScore.toFixed(1)}/10</span></p>
+                                ${paper.reviews.map((r, i) => `
+                                    <div class="review-card">
+                                        <p><strong>审稿人 ${i+1}:</strong> ${r.score}分 - 推荐${decisionMap[r.recommendation]}</p>
+                                        <p><small>${escapeHtml(r.comments?.substring(0, 100)) || '无意见'}${r.comments?.length > 100 ? '...' : ''}</small></p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('decisionReviewsSummary').innerHTML = `
+                            <div class="alert alert-error">暂无评审意见，建议等待审稿人提交评审后再做决定</div>
+                        `;
+                    }
+                }
+                
+                document.getElementById('decisionModal').classList.add('active');
+            } catch (error) {
+                showToast('加载论文信息失败', 'error');
+            }
+        }
+
+        function showReviseModal(paperId) {
+            document.getElementById('revisePaperId').value = paperId;
+            reviseFile = null;
+            document.getElementById('revisePaperFile').value = '';
+            document.getElementById('reviseFileName').textContent = '';
+            document.getElementById('reviseFileUploadArea').classList.remove('has-file');
+            document.getElementById('reviseUploadPrompt').textContent = '📄 点击或拖拽文件到此处上传';
+            document.getElementById('reviseDescription').value = '';
+            document.getElementById('reviseModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('scoreDisplay').textContent = document.getElementById('reviewScore').value;
+        }
+
+        function toggleResearchAreas() {
+            const group = document.getElementById('researchAreasGroup');
+            group.classList.toggle('hidden', document.getElementById('newRole').value !== '3');
+        }
+
+        // ==================== 提交操作 ====================
+        async function submitPaper() {
+            const title = document.getElementById('paperTitle').value.trim();
+            const abstract = document.getElementById('paperAbstract').value.trim();
+            const authors = document.getElementById('paperAuthors').value.split(',').map(a => a.trim()).filter(a => a);
+            const keywords = document.getElementById('paperKeywords').value.split(',').map(k => k.trim()).filter(k => k);
+            const area = document.getElementById('paperArea').value;
+
+            if (!title || !abstract) {
+                showToast('请填写标题和摘要', 'error');
+                return;
+            }
+
+            try {
+                // 构建请求数据
+                const requestData = {
+                    title: title,
+                    abstract: abstract,
+                    authors: authors,
+                    keywords: keywords,
+                    research_area: area
+                };
+                
+                // 只有选择了文件才添加paper_content
+                if (selectedFile) {
+                    // 检查文件大小，限制为 10MB
+                    if (selectedFile.size > 10 * 1024 * 1024) {
+                        showToast('文件过大，请上传10MB以内的PDF', 'error');
+                        return;
+                    }
+                    requestData.paper_content = await fileToBase64(selectedFile);
+                }
+
+                console.log('提交论文请求数据:', { ...requestData, paper_content: requestData.paper_content ? '(base64 data)' : undefined });
+
+                const result = await apiRequest('/api/submit', {
+                    method: 'POST',
+                    body: JSON.stringify(requestData)
+                });
+
+                if (result.success) {
+                    showToast('论文提交成功！', 'success');
+                    closeModal('submitPaperModal');
+                    loadPapers();
+                } else {
+                    showToast('提交失败：' + (result.message || '未知错误'), 'error');
+                }
+            } catch (error) {
+                console.error('提交论文失败:', error);
+                showToast('提交失败：' + error.message, 'error');
+            }
+        }
+
+        async function submitReview() {
+            const paperId = document.getElementById('reviewPaperId').value;
+            const score = parseInt(document.getElementById('reviewScore').value);
+            const comments = document.getElementById('reviewComments').value.trim();
+            const confidential = document.getElementById('confidentialComments').value.trim();
+            const recommendation = parseInt(document.getElementById('reviewRecommendation').value);
+
+            if (!comments) {
+                showToast('请填写评审意见', 'error');
+                return;
+            }
+
+            try {
+                const result = await apiRequest('/api/review', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        paper_id: parseInt(paperId),
+                        score: score,
+                        comments: comments,
+                        confidential_comments: confidential,
+                        recommendation: recommendation
+                    })
+                });
+
+                if (result.success) {
+                    showToast('评审提交成功！', 'success');
+                    closeModal('submitReviewModal');
+                    loadReviews();
+                } else {
+                    showToast('提交失败：' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('提交失败：' + error.message, 'error');
+            }
+        }
+
+        async function autoAssignReviewers() {
+            const paperId = document.getElementById('assignPaperId').value;
+            
+            try {
+                const result = await apiRequest('/api/assign', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        paper_id: parseInt(paperId),
+                        auto_assign: true
+                    })
+                });
+
+                if (result.success) {
+                    showToast(`审稿人分配成功！已分配 ${result.assigned_reviewers?.length || 0} 位审稿人`, 'success');
+                    closeModal('assignReviewerModal');
+                    loadAssignments();
+                    loadPapers();
+                } else {
+                    showToast('分配失败：' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('分配失败：' + error.message, 'error');
+            }
+        }
+
+        async function manualAssignReviewers() {
+            const paperId = document.getElementById('assignPaperId').value;
+            
+            if (selectedReviewers.size === 0) {
+                showToast('请至少选择一位审稿人', 'error');
+                return;
+            }
+            
+            try {
+                const result = await apiRequest('/api/assign', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        paper_id: parseInt(paperId),
+                        reviewer_ids: Array.from(selectedReviewers)
+                    })
+                });
+
+                if (result.success) {
+                    showToast('审稿人分配成功！', 'success');
+                    closeModal('assignReviewerModal');
+                    loadAssignments();
+                    loadPapers();
+                } else {
+                    showToast('分配失败：' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('分配失败：' + error.message, 'error');
+            }
+        }
+
+        async function makeDecision(decision) {
+            const paperId = document.getElementById('decisionPaperId').value;
+            const comments = document.getElementById('decisionComments').value.trim();
+            
+            try {
+                const result = await apiRequest('/api/decision', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        paper_id: parseInt(paperId),
+                        decision: decision,
+                        comments: comments
+                    })
+                });
+
+                if (result.success) {
+                    showToast('决定已记录！', 'success');
+                    closeModal('decisionModal');
+                    loadPapers();
+                    loadReviews();
+                } else {
+                    showToast('操作失败：' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('操作失败：' + error.message, 'error');
+            }
+        }
+
+        async function submitRevision() {
+            const paperId = document.getElementById('revisePaperId').value;
+            const description = document.getElementById('reviseDescription').value.trim();
+            
+            if (!reviseFile) {
+                showToast('请上传修订版论文', 'error');
+                return;
+            }
+            
+            if (!description) {
+                showToast('请填写修订说明', 'error');
+                return;
+            }
+            
+            try {
+                const content = await fileToBase64(reviseFile);
+                
+                const result = await apiRequest('/api/revise', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        paper_id: parseInt(paperId),
+                        paper_content: content,
+                        change_description: description
+                    })
+                });
+
+                if (result.success) {
+                    showToast('修订版本提交成功！', 'success');
+                    closeModal('reviseModal');
+                    loadPapers();
+                } else {
+                    showToast('提交失败：' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('提交失败：' + error.message, 'error');
+            }
+        }
+
+        async function createUser() {
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value;
+            const email = document.getElementById('newEmail').value.trim();
+            const fullname = document.getElementById('newFullname').value.trim();
+            const role = parseInt(document.getElementById('newRole').value);
+
+            if (!username || !password) {
+                showToast('请填写用户名和密码', 'error');
+                return;
+            }
+
+            const data = {
+                username,
+                password,
+                email,
+                full_name: fullname,
+                role
+            };
+
+            if (role === 3) {
+                const areas = document.getElementById('researchAreas').value;
+                if (areas) {
+                    data.research_areas = areas.split(',').map(a => a.trim()).filter(a => a);
+                }
+            }
+
+            try {
+                const result = await apiRequest('/api/register', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                if (result.success) {
+                    showToast('用户创建成功！', 'success');
+                    closeModal('createUserModal');
+                    loadUsers();
+                } else {
+                    showToast('创建失败：' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('创建失败：' + error.message, 'error');
+            }
+        }
+
+        function editUser(userId, email, fullname) {
+            document.getElementById('editUserId').value = userId;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editFullname').value = fullname;
+            document.getElementById('editPassword').value = '';
+            document.getElementById('editUserModal').classList.add('active');
+        }
+
+        async function updateUser() {
+            const userId = document.getElementById('editUserId').value;
+            const email = document.getElementById('editEmail').value.trim();
+            const fullname = document.getElementById('editFullname').value.trim();
+            const password = document.getElementById('editPassword').value;
+            
+            const data = {
+                user_id: parseInt(userId),
+                email,
+                full_name: fullname
+            };
+            
+            if (password) {
+                data.password = password;
+            }
+            
+            try {
+                const result = await apiRequest('/api/update-user', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                if (result.success) {
+                    showToast('用户更新成功！', 'success');
+                    closeModal('editUserModal');
+                    loadUsers();
+                } else {
+                    showToast('更新失败：' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('更新失败：' + error.message, 'error');
+            }
+        }
+
+        async function toggleUserStatus(userId) {
+            if (!confirm('确定要更改此用户的状态吗？')) {
+                return;
+            }
+            
+            try {
+                const result = await apiRequest('/api/toggle-user', {
+                    method: 'POST',
+                    body: JSON.stringify({ user_id: userId })
+                });
+
+                if (result.success) {
+                    showToast('用户状态已更改', 'success');
+                    loadUsers();
+                } else {
+                    showToast('操作失败：' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('操作失败：' + error.message, 'error');
+            }
+        }
+
+        // ==================== 工具函数 ====================
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置拖拽上传
+            setupDragDrop('fileUploadArea', 'paperFile', handleFileSelect);
+            setupDragDrop('reviseFileUploadArea', 'revisePaperFile', handleReviseFileSelect);
+            
+            // 回车登录
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

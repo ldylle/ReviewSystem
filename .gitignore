@@ -1,0 +1,9 @@
+build/
+*.o
+*.img
+server
+client
+web_server
+fs_test
+.vscode/
+.cmake/
